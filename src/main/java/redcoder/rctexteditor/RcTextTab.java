@@ -43,6 +43,10 @@ public class RcTextTab extends Tab {
         return textArea.getText();
     }
 
+    public boolean isChange() {
+        return textArea.isChange();
+    }
+
     public File getOpenedFile() {
         return openedFile;
     }

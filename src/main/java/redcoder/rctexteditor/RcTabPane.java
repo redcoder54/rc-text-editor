@@ -4,6 +4,7 @@ import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import redcoder.rctexteditor.support.UnsavedCreatedNewlyFiles;
+import redcoder.rctexteditor.utils.FileUtils;
 
 import java.io.File;
 import java.util.Iterator;
@@ -33,12 +34,20 @@ public class RcTabPane extends TabPane {
             }
         }
 
-        RcTextTab textTab = new RcTextTab(file);
-        addTextTab(textTab);
-
+        RcTextTab textTab;
         if (ucnf) {
+            textTab = new RcTextTab(file.getName(), FileUtils.readFile(file));
             UnsavedCreatedNewlyFiles.addTextTab(textTab);
+        } else {
+            RcTextTab currentTab = getCurrentTab();
+            if (currentTab != null && currentTab.getOpenedFile() == null && !currentTab.isChange()) {
+                currentTab.replaceWith(file);
+                textTab = currentTab;
+            } else {
+                textTab = new RcTextTab(file);
+            }
         }
+        addTextTab(textTab);
     }
 
     private void addTextTab(RcTextTab textTab) {
