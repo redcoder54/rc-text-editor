@@ -21,19 +21,19 @@ public class UnsavedCreatedNewlyFiles {
     private static final Logger LOGGER = Logger.getLogger(UnsavedCreatedNewlyFiles.class.getName());
 
     private static final String DIR_NAME = "ucnf";
-    private static final Map<String, RcTextTab> textPanes;
+    private static final Map<String, RcTextTab> textTabs;
     private static final File targetDir;
     private static boolean loaded;
 
     static {
-        textPanes = new HashMap<>();
+        textTabs = new HashMap<>();
         targetDir = new File(RcFileSupport.getParentDir(), DIR_NAME);
         if (!targetDir.exists()) {
             targetDir.mkdir();
         }
         ScheduledUtils.scheduleAtFixedRate(() -> {
             try {
-                for (Map.Entry<String, RcTextTab> entry : textPanes.entrySet()) {
+                for (Map.Entry<String, RcTextTab> entry : textTabs.entrySet()) {
                     String filename = entry.getKey();
                     File f = new File(targetDir, filename);
                     FileUtils.writeFile(entry.getValue().getTextContent(), f);
@@ -53,7 +53,7 @@ public class UnsavedCreatedNewlyFiles {
      * @param tab 新创建的且未保存的文本tab
      */
     public static void addTextTab(RcTextTab tab) {
-        textPanes.putIfAbsent(tab.getOriginalTitle(), tab);
+        textTabs.putIfAbsent(tab.getOriginalTitle(), tab);
     }
 
     /**
@@ -63,7 +63,7 @@ public class UnsavedCreatedNewlyFiles {
      */
     public static void removeTextTab(RcTextTab tab) {
         String filename = tab.getOriginalTitle();
-        textPanes.remove(filename);
+        textTabs.remove(filename);
 
         // delete file
         File f = new File(targetDir, filename);

@@ -18,12 +18,10 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class RcMenuBar extends MenuBar {
 
     private final RcTabPane tabPane;
-    private final AtomicInteger counter = new AtomicInteger(0);
 
     public RcMenuBar(RcTabPane tabPane) {
         this.tabPane = tabPane;
@@ -42,7 +40,7 @@ public class RcMenuBar extends MenuBar {
         // new file
         MenuItem newFileItem = new MenuItem("New File");
         newFileItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
-        newFileItem.setOnAction(event -> tabPane.newTab("new-" + counter.getAndIncrement()));
+        newFileItem.setOnAction(event -> tabPane.newTab());
 
         items.add(newFileItem);
         items.add(new SeparatorMenuItem());
@@ -67,7 +65,10 @@ public class RcMenuBar extends MenuBar {
         saveAsItem.setOnAction(event -> {
             RcTextTab textTab = tabPane.getCurrentTab();
             if (textTab != null) {
-                FileProcessor.saveTextTabToAnotherFile(textTab);
+                File file = FileProcessor.saveTextTabToAnotherFile(textTab);
+                if (file != null) {
+                    textTab.replaceWith(file);
+                }
             }
         });
         items.add(saveAsItem);

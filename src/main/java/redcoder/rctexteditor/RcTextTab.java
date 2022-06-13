@@ -13,12 +13,12 @@ public class RcTextTab extends Tab {
 
     private static final Object[] CLOSE_OPTIONS = {"Save", "Don't Save", "Cancel"};
     private String originalTitle;
-    private File file;
+    private File openedFile;
     private RcTextArea textArea;
 
-    public RcTextTab(File file) {
-        this(file.getName(), FileUtils.readFile(file));
-        this.file = file;
+    public RcTextTab(File openedFile) {
+        this(openedFile.getName(), FileUtils.readFile(openedFile));
+        this.openedFile = openedFile;
     }
 
     public RcTextTab(String originalTitle, String text) {
@@ -43,17 +43,17 @@ public class RcTextTab extends Tab {
         return textArea.getText();
     }
 
-    public File getFile() {
-        return file;
+    public File getOpenedFile() {
+        return openedFile;
     }
 
-    public void setFile(File file) {
-        this.file = file;
+    public void setOpenedFile(File openedFile) {
+        this.openedFile = openedFile;
     }
 
     public boolean save() {
         if (FileProcessor.saveTextTabToFile(this)) {
-            originalTitle = file.getName();
+            originalTitle = openedFile.getName();
             setText(originalTitle);
             textArea.setChange(false);
 
@@ -90,6 +90,14 @@ public class RcTextTab extends Tab {
         }
 
         return closed;
+    }
+
+    public void replaceWith(File file) {
+        originalTitle = file.getName();
+        openedFile = file;
+        textArea = new RcTextArea(FileUtils.readFile(file));
+        setText(originalTitle);
+        setContent(textArea);
     }
 
     private class RcTextArea extends TextArea {

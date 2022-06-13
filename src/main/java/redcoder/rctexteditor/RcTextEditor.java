@@ -17,6 +17,8 @@ public class RcTextEditor extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         RcTabPane tabPane = new RcTabPane();
+        tabPane.loadUCNF();
+
         RcMenuBar menuBar = new RcMenuBar(tabPane);
 
         BorderPane root = new BorderPane();
@@ -28,6 +30,11 @@ public class RcTextEditor extends Application {
         primaryStage.setTitle(TITLE);
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        System.exit(0);
     }
 
     public static void main(String[] args) {

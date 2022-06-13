@@ -60,7 +60,7 @@ public class FileProcessor {
      * @return true：保存成功，false：保存失败
      */
     public static boolean saveTextTabToFile(RcTextTab textTab) {
-        File file = textTab.getFile();
+        File file = textTab.getOpenedFile();
         String text = textTab.getTextContent();
         if (file != null) {
             FileUtils.writeFile(text, file);
@@ -86,14 +86,14 @@ public class FileProcessor {
                 int n = JOptionPane.showConfirmDialog(null, message, RcTextEditor.TITLE, JOptionPane.YES_NO_OPTION);
                 if (n == JOptionPane.YES_OPTION) {
                     FileUtils.writeFile(text, saveFile);
-                    textTab.setFile(saveFile);
+                    textTab.setOpenedFile(saveFile);
 
                     fireFileOpenEvent(textTab, saveFile, false);
                     return saveFile;
                 }
             } else {
                 FileUtils.writeFile(text, saveFile);
-                textTab.setFile(saveFile);
+                textTab.setOpenedFile(saveFile);
 
                 fireFileOpenEvent(textTab, saveFile, false);
                 return saveFile;
