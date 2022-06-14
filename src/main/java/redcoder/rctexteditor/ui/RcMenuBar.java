@@ -81,6 +81,13 @@ public class RcMenuBar extends MenuBar {
         closeAllItem.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
         closeAllItem.setOnAction(event -> editorTabPaneModel.closeAllTab());
         items.add(closeAllItem);
+        items.add(new SeparatorMenuItem());
+
+        // exit
+        MenuItem exitItem = new MenuItem("Exit");
+        // exitItem.setAccelerator(new KeyCodeCombination(KeyCode.F4, KeyCombination.CONTROL_DOWN));
+        exitItem.setOnAction(event -> System.exit(0));
+        items.add(exitItem);
 
         return fileMenu;
     }
