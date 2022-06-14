@@ -4,6 +4,8 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import redcoder.rctexteditor.ui.EditorTabPane;
+import redcoder.rctexteditor.ui.RcMenuBar;
 import redcoder.rctexteditor.log.LoggingUtils;
 
 import java.util.logging.Level;
@@ -16,10 +18,8 @@ public class RcTextEditor extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        RcTabPane tabPane = new RcTabPane();
-        tabPane.loadUCNF();
-
-        RcMenuBar menuBar = new RcMenuBar(tabPane);
+        EditorTabPane tabPane = new EditorTabPane();
+        RcMenuBar menuBar = new RcMenuBar(tabPane.getEditorTabPaneModel());
 
         BorderPane root = new BorderPane();
         root.setTop(menuBar);

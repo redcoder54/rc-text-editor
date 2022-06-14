@@ -7,8 +7,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.Test;
+import redcoder.rctexteditor.ui.EditorTabPane;
 
-public class RcTextTabPaneTest {
+public class EditorTabPaneTest {
 
     @Test
     public void test() {
@@ -18,7 +19,7 @@ public class RcTextTabPaneTest {
     public static class RcApplication extends Application {
         @Override
         public void start(Stage primaryStage) throws Exception {
-            RcTabPane tabPane = new RcTabPane();
+            EditorTabPane tabPane = new EditorTabPane();
             Tab tab = new Tab("first", new TextArea());
             tabPane.getTabs().add(tab);
 

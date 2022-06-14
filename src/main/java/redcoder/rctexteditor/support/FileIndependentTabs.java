@@ -1,7 +1,9 @@
 package redcoder.rctexteditor.support;
 
-import redcoder.rctexteditor.RcTabPane;
-import redcoder.rctexteditor.RcTextTab;
+import javafx.scene.Node;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TextArea;
+import redcoder.rctexteditor.model.EditorTabPaneModel;
 import redcoder.rctexteditor.utils.FileUtils;
 import redcoder.rctexteditor.utils.RcFileSupport;
 import redcoder.rctexteditor.utils.ScheduledUtils;
@@ -14,14 +16,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * 管理未保存的且新创建的文件
+ * 管理与文件无关的tab
  */
-public class UnsavedCreatedNewlyFiles {
+public class FileIndependentTabs {
 
-    private static final Logger LOGGER = Logger.getLogger(UnsavedCreatedNewlyFiles.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(FileIndependentTabs.class.getName());
 
     private static final String DIR_NAME = "ucnf";
-    private static final Map<String, RcTextTab> textTabs;
+    private static final Map<String, Tab> textTabs;
     private static final File targetDir;
     private static boolean loaded;
 
@@ -33,10 +35,15 @@ public class UnsavedCreatedNewlyFiles {
         }
         ScheduledUtils.scheduleAtFixedRate(() -> {
             try {
-                for (Map.Entry<String, RcTextTab> entry : textTabs.entrySet()) {
+                for (Map.Entry<String, Tab> entry : textTabs.entrySet()) {
                     String filename = entry.getKey();
                     File f = new File(targetDir, filename);
-                    FileUtils.writeFile(entry.getValue().getTextContent(), f);
+                    Node content = entry.getValue().getContent();
+                    if (content instanceof TextArea) {
+                        FileUtils.writeFile(((TextArea) content).getText(), f);
+                    } else {
+                        LOGGER.log(Level.WARNING, "Cannot save tab, because the content of tab is not a TextArea.");
+                    }
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "UnsavedCreatedNewlyFiles", e);
@@ -44,7 +51,7 @@ public class UnsavedCreatedNewlyFiles {
         }, 1, 3, TimeUnit.MINUTES);
     }
 
-    private UnsavedCreatedNewlyFiles() {
+    private FileIndependentTabs() {
     }
 
     /**
@@ -52,8 +59,8 @@ public class UnsavedCreatedNewlyFiles {
      *
      * @param tab 新创建的且未保存的文本tab
      */
-    public static void addTextTab(RcTextTab tab) {
-        textTabs.putIfAbsent(tab.getOriginalTitle(), tab);
+    public static void addTab(Tab tab) {
+        textTabs.putIfAbsent(tab.getText(), tab);
     }
 
     /**
@@ -61,8 +68,8 @@ public class UnsavedCreatedNewlyFiles {
      *
      * @param tab 文本tab
      */
-    public static void removeTextTab(RcTextTab tab) {
-        String filename = tab.getOriginalTitle();
+    public static void removeTab(Tab tab) {
+        String filename = tab.getText();
         textTabs.remove(filename);
 
         // delete file
@@ -71,12 +78,11 @@ public class UnsavedCreatedNewlyFiles {
     }
 
     /**
-     * 加载未保存的且新创建的文件
+     * 加载与文件无关的tab
      *
-     * @param tabPane 主窗格
      * @return 加载的文件数量
      */
-    public static int load(RcTabPane tabPane) {
+    public static int load(EditorTabPaneModel editorTabPaneModel) {
         if (loaded) {
             return 0;
         }
@@ -86,7 +92,7 @@ public class UnsavedCreatedNewlyFiles {
             return 0;
         }
         for (File file : files) {
-            FileProcessor.openFile(tabPane, file, true);
+            editorTabPaneModel.newFileIndependentTab(file.getName(), FileUtils.readFile(file));
         }
         return files.length;
     }

@@ -1,4 +1,4 @@
-package redcoder.rctexteditor;
+package redcoder.rctexteditor.ui;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.Menu;
@@ -8,9 +8,9 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import redcoder.rctexteditor.support.FileOpenEvent;
-import redcoder.rctexteditor.support.FileOpenListener;
-import redcoder.rctexteditor.support.FileProcessor;
+import redcoder.rctexteditor.event.TabOpenEvent;
+import redcoder.rctexteditor.event.TabOpenEventListener;
+import redcoder.rctexteditor.model.EditorTabPaneModel;
 import redcoder.rctexteditor.support.RecentlyOpenedFiles;
 import redcoder.rctexteditor.utils.ScheduledUtils;
 
@@ -21,10 +21,10 @@ import java.util.concurrent.TimeUnit;
 
 public class RcMenuBar extends MenuBar {
 
-    private final RcTabPane tabPane;
+    private final EditorTabPaneModel editorTabPaneModel;
 
-    public RcMenuBar(RcTabPane tabPane) {
-        this.tabPane = tabPane;
+    public RcMenuBar(EditorTabPaneModel editorTabPaneModel) {
+        this.editorTabPaneModel = editorTabPaneModel;
         init();
     }
 
@@ -40,7 +40,7 @@ public class RcMenuBar extends MenuBar {
         // new file
         MenuItem newFileItem = new MenuItem("New File");
         newFileItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
-        newFileItem.setOnAction(event -> tabPane.newTab());
+        newFileItem.setOnAction(event -> editorTabPaneModel.newFileIndependentTab());
 
         items.add(newFileItem);
         items.add(new SeparatorMenuItem());
@@ -48,56 +48,48 @@ public class RcMenuBar extends MenuBar {
         // open file
         MenuItem openFileItem = new MenuItem("Open File");
         openFileItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
-        openFileItem.setOnAction(event -> FileProcessor.openFile(tabPane));
+        openFileItem.setOnAction(event -> editorTabPaneModel.newFileDependentTab());
         items.add(openFileItem);
         // open recently file
-        items.add(new OpenRecentlyFileMenu());
+        items.add(new OpenRecentlyFileMenu(editorTabPaneModel));
         items.add(new SeparatorMenuItem());
 
         // save file
         MenuItem saveFileItem = new MenuItem("Save File");
         saveFileItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-        saveFileItem.setOnAction(event -> tabPane.saveCurrentTab());
+        saveFileItem.setOnAction(event -> editorTabPaneModel.saveSelectedTab());
         items.add(saveFileItem);
         // save as
         MenuItem saveAsItem = new MenuItem("Save As");
         saveAsItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN, KeyCombination.ALT_DOWN));
-        saveAsItem.setOnAction(event -> {
-            RcTextTab textTab = tabPane.getCurrentTab();
-            if (textTab != null) {
-                File file = FileProcessor.saveTextTabToAnotherFile(textTab);
-                if (file != null) {
-                    textTab.replaceWith(file);
-                }
-            }
-        });
+        saveAsItem.setOnAction(event -> editorTabPaneModel.saveSelectedTabAs());
         items.add(saveAsItem);
         // save all
         MenuItem saveAllItem = new MenuItem("Save All");
         saveAllItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
-        saveAllItem.setOnAction(event -> tabPane.saveAllTab());
+        saveAllItem.setOnAction(event -> editorTabPaneModel.saveAllTab());
         items.add(saveAllItem);
         items.add(new SeparatorMenuItem());
 
         // close file
         MenuItem closeFileItem = new MenuItem("Close File");
         closeFileItem.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN));
-        closeFileItem.setOnAction(event -> tabPane.closeCurrentTab());
+        closeFileItem.setOnAction(event -> editorTabPaneModel.closeSelectedTab());
         items.add(closeFileItem);
         // close all
         MenuItem closeAllItem = new MenuItem("Close All");
         closeAllItem.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
-        closeAllItem.setOnAction(event -> tabPane.closeAllTab());
+        closeAllItem.setOnAction(event -> editorTabPaneModel.closeAllTab());
         items.add(closeAllItem);
 
         return fileMenu;
     }
 
-    private class OpenRecentlyFileMenu extends Menu implements FileOpenListener {
+    private class OpenRecentlyFileMenu extends Menu implements TabOpenEventListener {
 
-        public OpenRecentlyFileMenu() {
+        public OpenRecentlyFileMenu(EditorTabPaneModel editorTabPaneModel) {
             super("Open Recently");
-            FileProcessor.addFileOpenListener(this);
+            editorTabPaneModel.addTabOpenListener(this);
             ScheduledUtils.schedule(this::initMenuItem, 0, TimeUnit.SECONDS);
         }
 
@@ -110,21 +102,13 @@ public class RcMenuBar extends MenuBar {
         private void addMenuItem(File file) {
             MenuItem menuItem = new MenuItem(file.getAbsolutePath());
             menuItem.setOnAction(event -> {
-                tabPane.newTab(file, false);
-                addOpenedFileRecently(file);
+                editorTabPaneModel.newFileDependentTab(file);
+                addRecentlyOpenedFile(file);
             });
             getItems().add(menuItem);
         }
 
-        @Override
-        public void onFileOpen(FileOpenEvent e) {
-            if (!e.isUnSavedNew()) {
-                File file = e.getOpenedFile();
-                addOpenedFileRecently(file);
-            }
-        }
-
-        private void addOpenedFileRecently(File file) {
+        private void addRecentlyOpenedFile(File file) {
             RecentlyOpenedFiles.addFile(file);
             String filepath = file.getAbsolutePath();
 
@@ -143,6 +127,14 @@ public class RcMenuBar extends MenuBar {
 
             // not exist, insert to first
             addMenuItem(file);
+        }
+
+        @Override
+        public void onTabOpen(TabOpenEvent event) {
+            if (TabOpenEvent.TabType.FILE_DEPENDENT == event.getTabType()) {
+                File relatedFile = event.getRelatedFile();
+                addRecentlyOpenedFile(relatedFile);
+            }
         }
     }
 }
