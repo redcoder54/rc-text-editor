@@ -1,16 +1,16 @@
 package redcoder.rctexteditor.ui;
 
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
+import javafx.scene.input.*;
 import redcoder.rctexteditor.event.TabOpenEvent;
 import redcoder.rctexteditor.event.TabOpenEventListener;
 import redcoder.rctexteditor.model.EditorTabPaneModel;
+import redcoder.rctexteditor.model.EditorTabPaneModel.Action;
 import redcoder.rctexteditor.support.RecentlyOpenedFiles;
 import redcoder.rctexteditor.utils.ScheduledUtils;
 
@@ -30,7 +30,9 @@ public class RcMenuBar extends MenuBar {
 
     private void init() {
         Menu fileMenu = createFileMenu();
-        getMenus().add(fileMenu);
+        Menu editMenu = createEditMenu();
+        Menu viewMenu = createViewMenu();
+        getMenus().addAll(fileMenu, editMenu, viewMenu);
     }
 
     private Menu createFileMenu() {
@@ -90,6 +92,78 @@ public class RcMenuBar extends MenuBar {
         items.add(exitItem);
 
         return fileMenu;
+    }
+
+    private Menu createEditMenu() {
+        Menu editMenu = new Menu("Edit");
+        ObservableList<MenuItem> items = editMenu.getItems();
+        // cut
+        MenuItem cutItem = new MenuItem("Cut");
+        cutItem.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
+        cutItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.CUT));
+        items.add(cutItem);
+        // copy
+        MenuItem copyItem = new MenuItem("Copy");
+        copyItem.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN));
+        copyItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.COPY));
+        items.add(copyItem);
+        // paste
+        MenuItem pasteItem = new MenuItem("Paste");
+        pasteItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
+        pasteItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.PASTE));
+        items.add(pasteItem);
+        items.add(new SeparatorMenuItem());
+
+        // undo
+        MenuItem undoItem = new MenuItem("Undo");
+        undoItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
+        undoItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.UNDO));
+        items.add(undoItem);
+        // redo
+        MenuItem redoItem = new MenuItem("Redo");
+        redoItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
+        redoItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.REDO));
+        items.add(redoItem);
+        items.add(new SeparatorMenuItem());
+
+        // find
+        MenuItem findItem = new MenuItem("Find");
+        findItem.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
+        findItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.FIND));
+        items.add(findItem);
+        // replace
+        MenuItem replaceItem = new MenuItem("Replace");
+        replaceItem.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
+        replaceItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.REPLACE));
+        items.add(replaceItem);
+        items.add(new SeparatorMenuItem());
+
+        return editMenu;
+    }
+
+    private Menu createViewMenu() {
+        Menu editMenu = new Menu("Edit");
+        ObservableList<MenuItem> items = editMenu.getItems();
+
+        // zoom in
+        MenuItem zoomInItem = new MenuItem("Zoom In");
+        zoomInItem.setAccelerator(new KeyCharacterCombination("=", KeyCombination.CONTROL_DOWN));
+        zoomInItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.ZOOM_IN));
+        items.add(zoomInItem);
+        // zoom out
+        MenuItem zoomOutItem = new MenuItem("Zoom Out");
+        zoomOutItem.setAccelerator(new KeyCharacterCombination("-", KeyCombination.CONTROL_DOWN));
+        zoomOutItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.ZOOM_OUT));
+        items.add(zoomOutItem);
+        items.add(new SeparatorMenuItem());
+
+        // auto wrap
+        MenuItem autoWrapItem = new MenuItem("Auto Wrap");
+        autoWrapItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.ALT_DOWN));
+        autoWrapItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.AUTO_WRAP));
+        items.add(autoWrapItem);
+
+        return editMenu;
     }
 
     private class OpenRecentlyFileMenu extends Menu implements TabOpenEventListener {

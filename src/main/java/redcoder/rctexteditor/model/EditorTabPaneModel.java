@@ -27,4 +27,10 @@ public interface EditorTabPaneModel {
     void addTabOpenListener(TabOpenEventListener eventListener);
 
     void removeTabOpenListener(TabOpenEventListener eventListener);
+
+    void handleAction(Action action);
+
+    enum Action {
+        CUT, COPY, PASTE, UNDO, REDO, FIND, REPLACE, ZOOM_IN, ZOOM_OUT, AUTO_WRAP
+    }
 }

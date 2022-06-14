@@ -3,11 +3,15 @@ package redcoder.rctexteditor.model;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import redcoder.rctexteditor.RcTextEditor;
 import redcoder.rctexteditor.event.TabOpenEvent;
 import redcoder.rctexteditor.event.TabOpenEventListener;
 import redcoder.rctexteditor.support.FileIndependentTabs;
+import redcoder.rctexteditor.support.font.FontChangeEvent;
+import redcoder.rctexteditor.support.font.FontChangeListener;
+import redcoder.rctexteditor.support.font.FontChangeProcessor;
 import redcoder.rctexteditor.ui.EditorTabPane;
 import redcoder.rctexteditor.utils.FileUtils;
 import redcoder.rctexteditor.utils.SystemUtils;
@@ -162,6 +166,43 @@ public class DefaultEditorTabPaneModel implements EditorTabPaneModel {
         }
     }
 
+    @Override
+    public void handleAction(Action action) {
+        EditorTab tab = getSelectedTab();
+        if (tab == null) {
+            return;
+        }
+        switch (action) {
+            case CUT:
+                tab.textArea.cut();
+                break;
+            case COPY:
+                tab.textArea.copy();
+                break;
+            case PASTE:
+                tab.textArea.paste();
+                break;
+            case UNDO:
+                tab.textArea.undo();
+                break;
+            case REDO:
+                tab.textArea.redo();
+                break;
+            case ZOOM_IN:
+                FontChangeProcessor.zoomIn(this);
+                break;
+            case ZOOM_OUT:
+                FontChangeProcessor.zoomOut(this);
+                break;
+            case AUTO_WRAP:
+                tab.textArea.setWrapText(!tab.textArea.isWrapText());
+                break;
+            default:
+                LOGGER.warning(() -> String.format("Unknown action: %s", action.name()));
+                break;
+        }
+    }
+
     private EditorTab getSelectedTab() {
         SingleSelectionModel<Tab> selectionModel = editorTabPane.getSelectionModel();
         return (EditorTab) selectionModel.getSelectedItem();
@@ -274,7 +315,7 @@ public class DefaultEditorTabPaneModel implements EditorTabPaneModel {
             setContent(textArea);
         }
 
-        private class EditorTextArea extends TextArea {
+        private class EditorTextArea extends TextArea implements FontChangeListener {
 
             // Indicates whether the text content has changed
             public boolean change;
@@ -282,6 +323,7 @@ public class DefaultEditorTabPaneModel implements EditorTabPaneModel {
             public EditorTextArea(String text) {
                 setPrefColumnCount(Integer.MAX_VALUE);
                 setPrefRowCount(Integer.MAX_VALUE);
+                setFont(FontChangeProcessor.getFont());
                 setText(text);
                 getContent().addListener((observable, oldValue, newValue) -> {
                     if (!change) {
@@ -289,6 +331,13 @@ public class DefaultEditorTabPaneModel implements EditorTabPaneModel {
                         EditorTab.this.setText("* " + EditorTab.this.tabTitle);
                     }
                 });
+                FontChangeProcessor.addListener(this);
+            }
+
+            @Override
+            public void onChange(FontChangeEvent e) {
+                Font font = e.getNewFont();
+                setFont(font);
             }
         }
     }
