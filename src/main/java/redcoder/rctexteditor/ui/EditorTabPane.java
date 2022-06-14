@@ -3,7 +3,7 @@ package redcoder.rctexteditor.ui;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import redcoder.rctexteditor.model.DefaultEditorTabPaneModel;
+import redcoder.rctexteditor.model.impl.DefaultEditorTabPaneModel;
 import redcoder.rctexteditor.model.EditorTabPaneModel;
 
 public class EditorTabPane extends TabPane {

@@ -1,4 +1,4 @@
-package redcoder.rctexteditor.model;
+package redcoder.rctexteditor.model.impl;
 
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
@@ -8,11 +8,13 @@ import javafx.stage.FileChooser;
 import redcoder.rctexteditor.RcTextEditor;
 import redcoder.rctexteditor.event.TabOpenEvent;
 import redcoder.rctexteditor.event.TabOpenEventListener;
+import redcoder.rctexteditor.model.EditorTabPaneModel;
 import redcoder.rctexteditor.support.FileIndependentTabs;
 import redcoder.rctexteditor.support.font.FontChangeEvent;
 import redcoder.rctexteditor.support.font.FontChangeListener;
 import redcoder.rctexteditor.support.font.FontChangeProcessor;
 import redcoder.rctexteditor.ui.EditorTabPane;
+import redcoder.rctexteditor.ui.FindReplaceUI;
 import redcoder.rctexteditor.utils.FileUtils;
 import redcoder.rctexteditor.utils.SystemUtils;
 
@@ -187,6 +189,10 @@ public class DefaultEditorTabPaneModel implements EditorTabPaneModel {
                 break;
             case REDO:
                 tab.textArea.redo();
+                break;
+            case FIND:
+            case REPLACE:
+                FindReplaceUI.showFindUI(tab.textArea);
                 break;
             case ZOOM_IN:
                 FontChangeProcessor.zoomIn(this);
