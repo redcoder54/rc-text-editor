@@ -4,10 +4,11 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.tbee.javafx.scene.layout.MigPane;
+import redcoder.rctexteditor.log.LoggingUtils;
+import redcoder.rctexteditor.ui.EditorMenuBar;
 import redcoder.rctexteditor.ui.EditorStatusBar;
 import redcoder.rctexteditor.ui.EditorTabPane;
-import redcoder.rctexteditor.ui.EditorMenuBar;
-import redcoder.rctexteditor.log.LoggingUtils;
+import redcoder.rctexteditor.ui.EditorToolBar;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,11 +20,13 @@ public class RcTextEditor extends Application {
 
     private final EditorTabPane tabPane;
     private final EditorMenuBar menuBar;
+    private final EditorToolBar toolBar;
     private final EditorStatusBar statusBar;
 
     public RcTextEditor() {
         tabPane = new EditorTabPane();
         menuBar = new EditorMenuBar(tabPane.getEditorTabPaneModel());
+        toolBar = new EditorToolBar(tabPane.getEditorTabPaneModel());
         statusBar = new EditorStatusBar(tabPane.getEditorTabPaneModel());
     }
 
@@ -31,10 +34,12 @@ public class RcTextEditor extends Application {
     public void start(Stage primaryStage) throws Exception {
         menuBar.start();
         statusBar.start();
+        toolBar.start();
         tabPane.start();
 
         MigPane root = new MigPane();
         root.add(menuBar, "north");
+        root.add(toolBar, "north");
         root.add(tabPane, "dock center");
         root.add(statusBar, "south");
 
@@ -48,6 +53,7 @@ public class RcTextEditor extends Application {
     public void stop() throws Exception {
         tabPane.stop();
         menuBar.stop();
+        toolBar.stop();
         statusBar.stop();
         System.exit(0);
     }

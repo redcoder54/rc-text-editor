@@ -5,13 +5,18 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.input.*;
-import redcoder.rctexteditor.support.Lifecycle;
-import redcoder.rctexteditor.support.tab.TabOpenEvent;
-import redcoder.rctexteditor.support.tab.TabOpenListener;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCharacterCombination;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import redcoder.rctexteditor.model.EditorTabPaneModel;
 import redcoder.rctexteditor.model.EditorTabPaneModel.Action;
+import redcoder.rctexteditor.support.ImageResources;
+import redcoder.rctexteditor.support.Lifecycle;
 import redcoder.rctexteditor.support.menu.RecentlyOpenedFiles;
+import redcoder.rctexteditor.support.tab.TabOpenEvent;
+import redcoder.rctexteditor.support.tab.TabOpenListener;
 import redcoder.rctexteditor.utils.ScheduledUtils;
 
 import java.io.File;
@@ -51,7 +56,7 @@ public class EditorMenuBar extends MenuBar implements Lifecycle {
         ObservableList<MenuItem> items = fileMenu.getItems();
 
         // new file
-        MenuItem newFileItem = new MenuItem("New File");
+        MenuItem newFileItem = new MenuItem("New File", new ImageView(ImageResources.getImage("Add16.gif")));
         newFileItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
         newFileItem.setOnAction(event -> editorTabPaneModel.newFileIndependentTab());
 
@@ -59,7 +64,7 @@ public class EditorMenuBar extends MenuBar implements Lifecycle {
         items.add(new SeparatorMenuItem());
 
         // open file
-        MenuItem openFileItem = new MenuItem("Open File");
+        MenuItem openFileItem = new MenuItem("Open File", new ImageView(ImageResources.getImage("Open16.gif")));
         openFileItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         openFileItem.setOnAction(event -> editorTabPaneModel.newFileDependentTab());
         items.add(openFileItem);
@@ -68,17 +73,17 @@ public class EditorMenuBar extends MenuBar implements Lifecycle {
         items.add(new SeparatorMenuItem());
 
         // save file
-        MenuItem saveFileItem = new MenuItem("Save File");
+        MenuItem saveFileItem = new MenuItem("Save File", new ImageView(ImageResources.getImage("Save16.gif")));
         saveFileItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
         saveFileItem.setOnAction(event -> editorTabPaneModel.saveSelectedTab());
         items.add(saveFileItem);
         // save as
-        MenuItem saveAsItem = new MenuItem("Save As");
+        MenuItem saveAsItem = new MenuItem("Save As", new ImageView(ImageResources.getImage("SaveAs16.gif")));
         saveAsItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN, KeyCombination.ALT_DOWN));
         saveAsItem.setOnAction(event -> editorTabPaneModel.saveSelectedTabAs());
         items.add(saveAsItem);
         // save all
-        MenuItem saveAllItem = new MenuItem("Save All");
+        MenuItem saveAllItem = new MenuItem("Save All", new ImageView(ImageResources.getImage("SaveAll16.gif")));
         saveAllItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
         saveAllItem.setOnAction(event -> editorTabPaneModel.saveAllTab());
         items.add(saveAllItem);
@@ -97,7 +102,7 @@ public class EditorMenuBar extends MenuBar implements Lifecycle {
         items.add(new SeparatorMenuItem());
 
         // exit
-        MenuItem exitItem = new MenuItem("Exit");
+        MenuItem exitItem = new MenuItem("Exit", new ImageView(ImageResources.getImage("Stop16.gif")));
         // exitItem.setAccelerator(new KeyCodeCombination(KeyCode.F4, KeyCombination.CONTROL_DOWN));
         exitItem.setOnAction(event -> System.exit(0));
         items.add(exitItem);
@@ -109,41 +114,41 @@ public class EditorMenuBar extends MenuBar implements Lifecycle {
         Menu editMenu = new Menu("Edit");
         ObservableList<MenuItem> items = editMenu.getItems();
         // cut
-        MenuItem cutItem = new MenuItem("Cut");
+        MenuItem cutItem = new MenuItem("Cut", new ImageView(ImageResources.getImage("Cut16.gif")));
         cutItem.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
         cutItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.CUT));
         items.add(cutItem);
         // copy
-        MenuItem copyItem = new MenuItem("Copy");
+        MenuItem copyItem = new MenuItem("Copy", new ImageView(ImageResources.getImage("Copy16.gif")));
         copyItem.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN));
         copyItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.COPY));
         items.add(copyItem);
         // paste
-        MenuItem pasteItem = new MenuItem("Paste");
+        MenuItem pasteItem = new MenuItem("Paste", new ImageView(ImageResources.getImage("Paste16.gif")));
         pasteItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
         pasteItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.PASTE));
         items.add(pasteItem);
         items.add(new SeparatorMenuItem());
 
         // undo
-        MenuItem undoItem = new MenuItem("Undo");
+        MenuItem undoItem = new MenuItem("Undo", new ImageView(ImageResources.getImage("Undo16.gif")));
         undoItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
         undoItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.UNDO));
         items.add(undoItem);
         // redo
-        MenuItem redoItem = new MenuItem("Redo");
+        MenuItem redoItem = new MenuItem("Redo", new ImageView(ImageResources.getImage("Redo16.gif")));
         redoItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
         redoItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.REDO));
         items.add(redoItem);
         items.add(new SeparatorMenuItem());
 
         // find
-        MenuItem findItem = new MenuItem("Find");
+        MenuItem findItem = new MenuItem("Find", new ImageView(ImageResources.getImage("Find16.gif")));
         findItem.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
         findItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.FIND));
         items.add(findItem);
         // replace
-        MenuItem replaceItem = new MenuItem("Replace");
+        MenuItem replaceItem = new MenuItem("Replace", new ImageView(ImageResources.getImage("Replace16.gif")));
         replaceItem.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
         replaceItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.REPLACE));
         items.add(replaceItem);
@@ -157,12 +162,12 @@ public class EditorMenuBar extends MenuBar implements Lifecycle {
         ObservableList<MenuItem> items = editMenu.getItems();
 
         // zoom in
-        MenuItem zoomInItem = new MenuItem("Zoom In");
+        MenuItem zoomInItem = new MenuItem("Zoom In", new ImageView(ImageResources.getImage("ZoomIn16.gif")));
         zoomInItem.setAccelerator(new KeyCharacterCombination("=", KeyCombination.CONTROL_DOWN));
         zoomInItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.ZOOM_IN));
         items.add(zoomInItem);
         // zoom out
-        MenuItem zoomOutItem = new MenuItem("Zoom Out");
+        MenuItem zoomOutItem = new MenuItem("Zoom Out", new ImageView(ImageResources.getImage("ZoomOut16.gif")));
         zoomOutItem.setAccelerator(new KeyCharacterCombination("-", KeyCombination.CONTROL_DOWN));
         zoomOutItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.ZOOM_OUT));
         items.add(zoomOutItem);
