@@ -1,18 +1,18 @@
 package redcoder.rctexteditor.model.impl;
 
+import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import redcoder.rctexteditor.RcTextEditor;
-import redcoder.rctexteditor.event.TabOpenEvent;
-import redcoder.rctexteditor.event.TabOpenEventListener;
 import redcoder.rctexteditor.model.EditorTabPaneModel;
-import redcoder.rctexteditor.support.FileIndependentTabs;
 import redcoder.rctexteditor.support.font.FontChangeEvent;
 import redcoder.rctexteditor.support.font.FontChangeListener;
 import redcoder.rctexteditor.support.font.FontChangeProcessor;
+import redcoder.rctexteditor.support.tab.*;
 import redcoder.rctexteditor.ui.EditorTabPane;
 import redcoder.rctexteditor.ui.FindReplaceUI;
 import redcoder.rctexteditor.utils.FileUtils;
@@ -22,6 +22,7 @@ import javax.swing.*;
 import javax.swing.event.EventListenerList;
 import java.io.File;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,8 +48,31 @@ public class DefaultEditorTabPaneModel implements EditorTabPaneModel {
 
     public DefaultEditorTabPaneModel(EditorTabPane editorTabPane) {
         this.editorTabPane = editorTabPane;
+        this.editorTabPane.getTabs().addListener((ListChangeListener<Tab>) c -> {
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    List<? extends Tab> list = c.getAddedSubList();
+                    for (Tab tab : list) {
+                        EditorTab editorTab = (EditorTab) tab;
+                        if (editorTab.tabType == TabEvent.TabType.FILE_INDEPENDENT) {
+                            FileIndependentTabs.addTab(editorTab.tabTitle, editorTab);
+                        }
+                        fireTabOpenEvent(editorTab, editorTab.openedFile);
+                    }
+                } else if (c.wasRemoved()) {
+                    List<? extends Tab> list = c.getRemoved();
+                    for (Tab tab : list) {
+                        EditorTab editorTab = (EditorTab) tab;
+                        FileIndependentTabs.removeTab(editorTab.tabTitle, editorTab);
+                        fireTabCloseEvent(editorTab);
+                    }
+                }
+            }
+        });
+    }
 
-        // todo：待优化
+    @Override
+    public void start() {
         try {
             int i = FileIndependentTabs.load(this);
             COUNTER.set(i);
@@ -65,10 +89,9 @@ public class DefaultEditorTabPaneModel implements EditorTabPaneModel {
 
     @Override
     public void newFileIndependentTab(String tabTitle, String tabTextContent) {
-        EditorTab editorTab = new EditorTab(tabTitle, tabTextContent);
+        EditorTab editorTab = new EditorTab(tabTitle, TabOpenEvent.TabType.FILE_INDEPENDENT);
+        editorTab.textArea.appendText(tabTextContent);
         addEditorTab(editorTab);
-        FileIndependentTabs.addTab(editorTab);
-        fireTabOpenListener(TabOpenEvent.TabType.FILE_INDEPENDENT, null);
     }
 
     @Override
@@ -90,8 +113,8 @@ public class DefaultEditorTabPaneModel implements EditorTabPaneModel {
             }
         }
 
-        addEditorTab(new EditorTab(file));
-        fireTabOpenListener(TabOpenEvent.TabType.FILE_DEPENDENT, file);
+        EditorTab editorTab = new EditorTab(file, TabOpenEvent.TabType.FILE_DEPENDENT);
+        addEditorTab(editorTab);
     }
 
     private void addEditorTab(EditorTab editorTab) {
@@ -151,24 +174,6 @@ public class DefaultEditorTabPaneModel implements EditorTabPaneModel {
     }
 
     @Override
-    public void addTabOpenListener(TabOpenEventListener eventListener) {
-        EVENT_LISTENER_LIST.add(TabOpenEventListener.class, eventListener);
-    }
-
-    @Override
-    public void removeTabOpenListener(TabOpenEventListener eventListener) {
-        EVENT_LISTENER_LIST.remove(TabOpenEventListener.class, eventListener);
-    }
-
-    private void fireTabOpenListener(TabOpenEvent.TabType tabType, File relatedFile) {
-        TabOpenEvent event = new TabOpenEvent(this, tabType);
-        event.setRelatedFile(relatedFile);
-        for (TabOpenEventListener listener : EVENT_LISTENER_LIST.getListeners(TabOpenEventListener.class)) {
-            listener.onTabOpen(event);
-        }
-    }
-
-    @Override
     public void handleAction(Action action) {
         EditorTab tab = getSelectedTab();
         if (tab == null) {
@@ -206,6 +211,85 @@ public class DefaultEditorTabPaneModel implements EditorTabPaneModel {
             default:
                 LOGGER.warning(() -> String.format("Unknown action: %s", action.name()));
                 break;
+        }
+    }
+
+    @Override
+    public void addTabOpenListener(TabOpenListener listener) {
+        EVENT_LISTENER_LIST.add(TabOpenListener.class, listener);
+    }
+
+    @Override
+    public void removeTabOpenListener(TabOpenListener listener) {
+        EVENT_LISTENER_LIST.remove(TabOpenListener.class, listener);
+    }
+
+    @Override
+    public void addTabCloseListener(TabCloseListener listener) {
+        EVENT_LISTENER_LIST.add(TabCloseListener.class, listener);
+    }
+
+    @Override
+    public void removeTabCloseListener(TabCloseListener listener) {
+        EVENT_LISTENER_LIST.remove(TabCloseListener.class, listener);
+    }
+
+    @Override
+    public void addTabContentChangeListener(TabContentChangeListener listener) {
+        EVENT_LISTENER_LIST.add(TabContentChangeListener.class, listener);
+    }
+
+    @Override
+    public void removeTabContentChangeListener(TabContentChangeListener listener) {
+        EVENT_LISTENER_LIST.remove(TabContentChangeListener.class, listener);
+    }
+
+    @Override
+    public void addTabSelectedListener(TabSelectedListener listener) {
+        EVENT_LISTENER_LIST.add(TabSelectedListener.class, listener);
+    }
+
+    @Override
+    public void removeTabSelectedListener(TabSelectedListener listener) {
+        EVENT_LISTENER_LIST.remove(TabSelectedListener.class, listener);
+    }
+
+    private void fireTabOpenEvent(EditorTab editorTab, File relatedFile) {
+        TabOpenEvent event = new TabOpenEvent(this);
+        event.setEditorTabPane(editorTabPane);
+        event.setTabType(editorTab.tabType);
+        event.setOpenedTab(editorTab);
+        event.setRelatedFile(relatedFile);
+        for (TabOpenListener listener : EVENT_LISTENER_LIST.getListeners(TabOpenListener.class)) {
+            listener.onTabOpen(event);
+        }
+    }
+
+    private void fireTabCloseEvent(EditorTab editorTab) {
+        TabCloseEvent event = new TabCloseEvent(this);
+        event.setEditorTabPane(editorTabPane);
+        event.setTabType(editorTab.tabType);
+        event.setClosedTab(editorTab);
+        for (TabCloseListener listener : EVENT_LISTENER_LIST.getListeners(TabCloseListener.class)) {
+            listener.onTabClose(event);
+        }
+    }
+
+    private void fireTabContentChangeEvent(Node node) {
+        TabContentChangeEvent event = new TabContentChangeEvent(this);
+        event.setEditorTabPane(editorTabPane);
+        event.setContent(node);
+        for (TabContentChangeListener listener : EVENT_LISTENER_LIST.getListeners(TabContentChangeListener.class)) {
+            listener.onTabContentChange(event);
+        }
+    }
+
+    private void fireTabSelectedEvent(Tab tab) {
+        TabSelectedEvent event = new TabSelectedEvent(this);
+        event.setEditorTabPane(editorTabPane);
+        event.setSelectedTab(tab);
+        for (TabSelectedListener listener : EVENT_LISTENER_LIST.getListeners(TabSelectedListener.class)) {
+            listener.onTabSelected(event);
         }
     }
 
@@ -273,11 +357,6 @@ public class DefaultEditorTabPaneModel implements EditorTabPaneModel {
         } else {
             closed = true;
         }
-
-        if (closed) {
-            FileIndependentTabs.removeTab(editorTab);
-        }
-
         return closed;
     }
 
@@ -286,19 +365,21 @@ public class DefaultEditorTabPaneModel implements EditorTabPaneModel {
         private String tabTitle;
         private File openedFile;
         private EditorTextArea textArea;
+        private TabOpenEvent.TabType tabType;
 
-        public EditorTab(File openedFile) {
-            this(openedFile.getName(), FileUtils.readFile(openedFile), openedFile);
+        public EditorTab(File openedFile, TabOpenEvent.TabType tabType) {
+            this(openedFile.getName(), FileUtils.readFile(openedFile), openedFile, tabType);
         }
 
-        public EditorTab(String tabTitle, String tabTextContent) {
-            this(tabTitle, tabTextContent, null);
+        public EditorTab(String tabTitle, TabOpenEvent.TabType tabType) {
+            this(tabTitle, "", null, tabType);
         }
 
-        private EditorTab(String tabTitle, String tabTextContent, File openedFile) {
+        private EditorTab(String tabTitle, String tabTextContent, File openedFile, TabOpenEvent.TabType tabType) {
             this.tabTitle = tabTitle;
             this.openedFile = openedFile;
             this.textArea = new EditorTextArea(tabTextContent);
+            this.tabType = tabType;
 
             setText(tabTitle);
             setContent(textArea);
@@ -307,6 +388,7 @@ public class DefaultEditorTabPaneModel implements EditorTabPaneModel {
                     event.consume();
                 }
             });
+            selectedProperty().addListener((observable, oldValue, newValue) -> fireTabSelectedEvent(EditorTab.this));
         }
 
         public void updateTabTitle(String newTabTitle) {
@@ -336,7 +418,12 @@ public class DefaultEditorTabPaneModel implements EditorTabPaneModel {
                         change = true;
                         EditorTab.this.setText("* " + EditorTab.this.tabTitle);
                     }
+                    fireTabContentChangeEvent(this);
                 });
+                caretPositionProperty().addListener((observable, oldValue, newValue) -> {
+                    fireTabContentChangeEvent(this);
+                });
+
                 FontChangeProcessor.addListener(this);
             }
 

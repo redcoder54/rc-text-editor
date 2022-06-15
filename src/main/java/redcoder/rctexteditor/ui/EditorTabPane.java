@@ -5,8 +5,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import redcoder.rctexteditor.model.impl.DefaultEditorTabPaneModel;
 import redcoder.rctexteditor.model.EditorTabPaneModel;
+import redcoder.rctexteditor.support.Lifecycle;
 
-public class EditorTabPane extends TabPane {
+public class EditorTabPane extends TabPane implements Lifecycle {
 
     private final EditorTabPaneModel editorTabPaneModel;
 
@@ -27,5 +28,10 @@ public class EditorTabPane extends TabPane {
 
     public EditorTabPaneModel getEditorTabPaneModel() {
         return editorTabPaneModel;
+    }
+
+    @Override
+    public void start() {
+        editorTabPaneModel.start();
     }
 }

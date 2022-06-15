@@ -1,16 +1,17 @@
-package redcoder.rctexteditor.event;
+package redcoder.rctexteditor.support.tab;
+
+import javafx.scene.control.Tab;
 
 import java.io.File;
-import java.util.EventObject;
 
-public class TabOpenEvent extends EventObject {
+public class TabOpenEvent extends TabEvent {
 
     private TabType tabType;
+    private Tab openedTab;
     private File relatedFile;
 
-    public TabOpenEvent(Object source, TabType tabType) {
+    public TabOpenEvent(Object source) {
         super(source);
-        this.tabType = tabType;
     }
 
     public TabType getTabType() {
@@ -21,15 +22,19 @@ public class TabOpenEvent extends EventObject {
         this.tabType = tabType;
     }
 
+    public Tab getOpenedTab() {
+        return openedTab;
+    }
+
+    public void setOpenedTab(Tab openedTab) {
+        this.openedTab = openedTab;
+    }
+
     public File getRelatedFile() {
         return relatedFile;
     }
 
     public void setRelatedFile(File relatedFile) {
         this.relatedFile = relatedFile;
-    }
-
-    public enum TabType {
-        FILE_INDEPENDENT, FILE_DEPENDENT
     }
 }

@@ -1,17 +1,17 @@
 package redcoder.rctexteditor.ui;
 
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.*;
-import redcoder.rctexteditor.event.TabOpenEvent;
-import redcoder.rctexteditor.event.TabOpenEventListener;
+import redcoder.rctexteditor.support.Lifecycle;
+import redcoder.rctexteditor.support.tab.TabOpenEvent;
+import redcoder.rctexteditor.support.tab.TabOpenListener;
 import redcoder.rctexteditor.model.EditorTabPaneModel;
 import redcoder.rctexteditor.model.EditorTabPaneModel.Action;
-import redcoder.rctexteditor.support.RecentlyOpenedFiles;
+import redcoder.rctexteditor.support.menu.RecentlyOpenedFiles;
 import redcoder.rctexteditor.utils.ScheduledUtils;
 
 import java.io.File;
@@ -19,16 +19,27 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class RcMenuBar extends MenuBar {
+public class EditorMenuBar extends MenuBar implements Lifecycle {
 
     private final EditorTabPaneModel editorTabPaneModel;
+    private final OpenRecentlyFileMenu orfMenu;
 
-    public RcMenuBar(EditorTabPaneModel editorTabPaneModel) {
+    public EditorMenuBar(EditorTabPaneModel editorTabPaneModel) {
         this.editorTabPaneModel = editorTabPaneModel;
-        init();
+        this.orfMenu = new OpenRecentlyFileMenu(editorTabPaneModel);
     }
 
-    private void init() {
+    @Override
+    public void start() {
+        initMenu();
+    }
+
+    @Override
+    public void stop() {
+        editorTabPaneModel.removeTabOpenListener(orfMenu);
+    }
+
+    private void initMenu() {
         Menu fileMenu = createFileMenu();
         Menu editMenu = createEditMenu();
         Menu viewMenu = createViewMenu();
@@ -53,7 +64,7 @@ public class RcMenuBar extends MenuBar {
         openFileItem.setOnAction(event -> editorTabPaneModel.newFileDependentTab());
         items.add(openFileItem);
         // open recently file
-        items.add(new OpenRecentlyFileMenu(editorTabPaneModel));
+        items.add(orfMenu);
         items.add(new SeparatorMenuItem());
 
         // save file
@@ -142,7 +153,7 @@ public class RcMenuBar extends MenuBar {
     }
 
     private Menu createViewMenu() {
-        Menu editMenu = new Menu("Edit");
+        Menu editMenu = new Menu("View");
         ObservableList<MenuItem> items = editMenu.getItems();
 
         // zoom in
@@ -166,7 +177,7 @@ public class RcMenuBar extends MenuBar {
         return editMenu;
     }
 
-    private class OpenRecentlyFileMenu extends Menu implements TabOpenEventListener {
+    private class OpenRecentlyFileMenu extends Menu implements TabOpenListener {
 
         public OpenRecentlyFileMenu(EditorTabPaneModel editorTabPaneModel) {
             super("Open Recently");

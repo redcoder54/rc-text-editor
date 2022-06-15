@@ -1,4 +1,4 @@
-package redcoder.rctexteditor.support;
+package redcoder.rctexteditor.support.tab;
 
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
@@ -59,8 +59,8 @@ public class FileIndependentTabs {
      *
      * @param tab 新创建的且未保存的文本tab
      */
-    public static void addTab(Tab tab) {
-        textTabs.putIfAbsent(tab.getText(), tab);
+    public static void addTab(String tabTitle, Tab tab) {
+        textTabs.putIfAbsent(tabTitle, tab);
     }
 
     /**
@@ -68,12 +68,11 @@ public class FileIndependentTabs {
      *
      * @param tab 文本tab
      */
-    public static void removeTab(Tab tab) {
-        String filename = tab.getText();
-        textTabs.remove(filename);
+    public static void removeTab(String tabTitle, Tab tab) {
+        textTabs.remove(tabTitle);
 
         // delete file
-        File f = new File(targetDir, filename);
+        File f = new File(targetDir, tabTitle);
         f.delete();
     }
 

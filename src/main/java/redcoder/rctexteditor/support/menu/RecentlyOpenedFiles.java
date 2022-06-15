@@ -1,4 +1,4 @@
-package redcoder.rctexteditor.support;
+package redcoder.rctexteditor.support.menu;
 
 import redcoder.rctexteditor.utils.FileUtils;
 import redcoder.rctexteditor.utils.RcFileSupport;
