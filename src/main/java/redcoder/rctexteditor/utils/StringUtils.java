@@ -17,4 +17,13 @@ public class StringUtils {
     public static boolean isEmpty(String str) {
         return str == null || str.isEmpty();
     }
+
+    public static boolean isContainNonEnglishLetter(String str) {
+        for (char c : str.toCharArray()) {
+            if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

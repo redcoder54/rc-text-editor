@@ -193,6 +193,10 @@ public class DefaultFindReplaceUIModel implements FindReplaceUIModel {
     }
 
     private boolean isWord(int startIndex, String pattern, int length, String text) {
+        if (StringUtils.isContainNonEnglishLetter(pattern)) {
+            return true;
+        }
+
         boolean isWord1, isWord2;
         if (startIndex > 0) {
             isWord1 = !Character.isLetterOrDigit(text.charAt(startIndex - 1));
