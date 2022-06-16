@@ -4,13 +4,10 @@ import javafx.scene.image.Image;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -47,6 +44,7 @@ public class ImageResources {
             if (str.startsWith("file")) {
                 loadLocalFile(url);
             } else if (str.startsWith("jar")) {
+                LOGGER.info(() -> "Loading images from jar.");
                 loadJarFile(classLoader, url);
             } else {
                 LOGGER.log(Level.WARNING, "Unknown URL[ " + str + "], we can't handle it.");
@@ -86,22 +84,33 @@ public class ImageResources {
         JarFile jarFile = connection.getJarFile();
         Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {
-            String name = entries.nextElement().getName().toLowerCase();
-            InputStream is = classLoader.getResourceAsStream(name);
-            if (is != null) {
-                Image image;
-                try {
-                    image = new Image(is);
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Cannot create image!", e);
-                    continue;
+            JarEntry entry = entries.nextElement();
+            if (entry.isDirectory()) {
+                continue;
+            }
+            String name = entry.getName();
+            String suffix = getEntryNameSuffix(name);
+            if(SUPPORTED_IMAGE_FORMAT.contains(suffix)){
+                InputStream is = classLoader.getResourceAsStream(name);
+                if (is != null) {
+                    Image image = new Image(is);
+                    String imageName = name.substring(name.lastIndexOf("/") + 1);
+                    IMAGES.put(imageName, image);
+                    LOGGER.info(() -> String.format("%s loaded", imageName));
                 }
-                String imageName = name.substring(name.lastIndexOf("/") + 1);
-                IMAGES.put(imageName, image);
             }
         }
     }
 
+    private static String getEntryNameSuffix(String name) {
+        int i = name.lastIndexOf(".");
+        if (i > -1) {
+            return name.substring(i).toLowerCase();
+        }
+        return "";
+    }
+
+    private static final List<String> SUPPORTED_IMAGE_FORMAT = Arrays.asList(".gif", ".png", ".jpg", ".jpeg");
     static {
         loadImages();
     }
