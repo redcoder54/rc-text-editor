@@ -12,7 +12,6 @@ import redcoder.rctexteditor.support.font.FontChangeEvent;
 import redcoder.rctexteditor.support.font.FontChangeListener;
 import redcoder.rctexteditor.support.font.FontChangeProcessor;
 import redcoder.rctexteditor.support.tab.*;
-import redcoder.rctexteditor.utils.SystemUtils;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,8 +25,8 @@ public class EditorStatusBar extends MigPane implements Lifecycle {
     private final Label lengthLabel = new Label("length: 0, lines: 1");
     // private final Label rowColLabel = new Label("row: 1, col: 1");
     private final Label caretPositionLabel = new Label("caret position: 1");
-    private final Label lineSeparatorLabel = new Label("Windows(CR LF)");
-    private final Label fontLabel = new Label("Font Size: 12");
+    private final Label lineSeparatorLabel = new Label("LF");
+    private final Label fontLabel = new Label("Font Size: " + FontChangeProcessor.getFontSize());
 
     public EditorStatusBar(EditorTabPaneModel editorTabPaneModel) {
         super("fill", "[fill][grow 0]");
@@ -42,12 +41,6 @@ public class EditorStatusBar extends MigPane implements Lifecycle {
         add(lineSeparatorLabel, "gapafter 30");
         add(new Separator(Orientation.VERTICAL), "gapafter 3");
         add(fontLabel, "gapafter 20");
-
-        // init text
-        if (!SystemUtils.isWindowsOS()) {
-            lineSeparatorLabel.setText("Unix(LF)");
-        }
-        fontLabel.setText("Font Size: " + Double.valueOf(FontChangeProcessor.getFont().getSize()).intValue());
     }
 
     @Override

@@ -28,6 +28,10 @@ public class FontChangeProcessor {
         return font;
     }
 
+    public static int getFontSize() {
+        return Double.valueOf(font.getSize()).intValue();
+    }
+
     public static void zoomIn(Object source) {
         double fontSize = Math.min(font.getSize() + 2, FONT_SIZE_MAXIMUM);
         font = Font.font(font.getFamily(), fontSize);
