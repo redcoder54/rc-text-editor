@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import org.tbee.javafx.scene.layout.fxml.MigPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<fx:root type="MigPane" xmlns:fx="http://javafx.com/fxml" layout="fill" cols="[fill][grow 0]">
+    <Label fx:id="lengthLabel" text="length: 0, lines: 1"/>
+    <Separator orientation="VERTICAL" MigPane.cc="right, split 6, gapafter 3"/>
+    <Label fx:id="caretPositionLabel" text="caret position: 1" MigPane.cc="gapafter 30"/>
+    <Separator orientation="VERTICAL" MigPane.cc="gapafter 3"/>
+    <Label text="LF" MigPane.cc="gapafter 30"/>
+    <Separator orientation="VERTICAL" MigPane.cc="gapafter 3"/>
+    <Label fx:id="fontLabel" text="Font Size: 12" MigPane.cc="gapafter 20"/>
+</fx:root>

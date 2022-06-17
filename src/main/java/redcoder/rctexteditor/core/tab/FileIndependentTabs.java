@@ -1,9 +1,8 @@
-package redcoder.rctexteditor.support.tab;
+package redcoder.rctexteditor.core.tab;
 
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
-import redcoder.rctexteditor.model.EditorTabPaneModel;
 import redcoder.rctexteditor.utils.FileUtils;
 import redcoder.rctexteditor.utils.RcFileSupport;
 import redcoder.rctexteditor.utils.ScheduledUtils;
@@ -25,7 +24,6 @@ public class FileIndependentTabs {
     private static final String DIR_NAME = "ucnf";
     private static final Map<String, Tab> textTabs;
     private static final File targetDir;
-    private static boolean loaded;
 
     static {
         textTabs = new HashMap<>();
@@ -76,23 +74,8 @@ public class FileIndependentTabs {
         f.delete();
     }
 
-    /**
-     * 加载与文件无关的tab
-     *
-     * @return 加载的文件数量
-     */
-    public static int load(EditorTabPaneModel editorTabPaneModel) {
-        if (loaded) {
-            return 0;
-        }
-        loaded = true;
+    public static File[] getFileIndependentTabs() {
         File[] files = targetDir.listFiles(pathname -> !pathname.isDirectory());
-        if (files == null || files.length == 0) {
-            return 0;
-        }
-        for (File file : files) {
-            editorTabPaneModel.newFileIndependentTab(file.getName(), FileUtils.readFile(file));
-        }
-        return files.length;
+        return files == null ? new File[0] : files;
     }
 }

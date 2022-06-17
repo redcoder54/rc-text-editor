@@ -1,14 +1,11 @@
 package redcoder.rctexteditor;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.tbee.javafx.scene.layout.MigPane;
 import redcoder.rctexteditor.log.LoggingUtils;
-import redcoder.rctexteditor.ui.EditorMenuBar;
-import redcoder.rctexteditor.ui.EditorStatusBar;
-import redcoder.rctexteditor.ui.EditorTabPane;
-import redcoder.rctexteditor.ui.EditorToolBar;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,43 +15,22 @@ public class RcTextEditor extends Application {
     public static final String TITLE = "Rc Text Editor";
     private static final Logger LOGGER = Logger.getLogger(RcTextEditor.class.getName());
 
-    private final EditorTabPane tabPane;
-    private final EditorMenuBar menuBar;
-    private final EditorToolBar toolBar;
-    private final EditorStatusBar statusBar;
-
-    public RcTextEditor() {
-        tabPane = new EditorTabPane();
-        menuBar = new EditorMenuBar(tabPane.getEditorTabPaneModel());
-        toolBar = new EditorToolBar(tabPane.getEditorTabPaneModel());
-        statusBar = new EditorStatusBar(tabPane.getEditorTabPaneModel());
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
-        menuBar.start();
-        statusBar.start();
-        toolBar.start();
-        tabPane.start();
-
-        MigPane root = new MigPane();
-        root.add(menuBar, "north");
-        root.add(toolBar, "north");
-        root.add(tabPane, "dock center");
-        root.add(statusBar, "south");
-
-        Scene scene = new Scene(root, 900, 600);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle(TITLE);
-        primaryStage.show();
+        try {
+            Pane root = FXMLLoader.load(getClass().getResource("/fxml/rc-text-editor.fxml"));
+            Scene scene = new Scene(root, 900, 600);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle(TITLE);
+            primaryStage.show();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to load rc-text-editor.fxml", e);
+            throw e;
+        }
     }
 
     @Override
-    public void stop() throws Exception {
-        tabPane.stop();
-        menuBar.stop();
-        toolBar.stop();
-        statusBar.stop();
+    public void stop() {
         System.exit(0);
     }
 

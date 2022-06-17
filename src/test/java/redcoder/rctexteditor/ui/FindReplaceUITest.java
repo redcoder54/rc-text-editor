@@ -15,12 +15,12 @@ public class FindReplaceUITest extends Application {
         TextArea textArea = new TextArea("hello world");
         Button button1 = new Button("Show Find");
         button1.setOnAction(event -> {
-            FindReplaceUI.showFindUI(textArea);
+            FindReplaceDialog.showFindDialog(textArea);
         });
 
         Button button2 = new Button("Show Replace");
         button2.setOnAction(event -> {
-            FindReplaceUI.showReplaceUI(textArea);
+            FindReplaceDialog.showReplaceDialog(textArea);
         });
 
 

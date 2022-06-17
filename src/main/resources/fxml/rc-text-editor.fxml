@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.input.*?>
+<?import org.tbee.javafx.scene.layout.fxml.*?>
+<?import redcoder.rctexteditor.core.editoraction.*?>
+<MigPane xmlns:fx="http://javafx.com/fxml" fx:controller="redcoder.rctexteditor.core.RcTextEditorController">
+    <!-- Menu -->
+    <MenuBar MigPane.cc="north">
+        <!-- File Menu -->
+        <Menu text="File">
+            <MenuItem text="New File" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="NEW_FILE_INDEPENDENT_TAB"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/New16.gif"/>
+                    </ImageView>
+                </graphic>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+N"/>
+                </accelerator>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem text="Open File" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="NEW_FILE_DEPENDENT_TAB"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/Open16.gif"/>
+                    </ImageView>
+                </graphic>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+O"/>
+                </accelerator>
+            </MenuItem>
+            <Menu fx:id="recentlyOpenedMenu" text="Open Recently"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="Save File" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="SAVE_SELECTED_TAB"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/Save16.gif"/>
+                    </ImageView>
+                </graphic>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+S"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem text="Save As" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="SAVE_SELECTED_TAB_AS"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/SaveAs16.gif"/>
+                    </ImageView>
+                </graphic>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+Alt+S"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem text="Save All" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="SAVE_ALL_TAB"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/SaveAll16.gif"/>
+                    </ImageView>
+                </graphic>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+Shift+S"/>
+                </accelerator>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem text="Close File" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="CLOSE_SELECTED_TAB"/>
+                </userData>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+W"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem text="Close All" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="CLOSE_ALL_TAB"/>
+                </userData>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+Shift+W"/>
+                </accelerator>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem text="Exit" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="EXIT"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/Stop16.gif"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+        </Menu>
+
+        <!-- Edit Menu -->
+        <Menu text="Edit">
+            <MenuItem text="Cut" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="CUT"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/Cut16.gif"/>
+                    </ImageView>
+                </graphic>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+X"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem text="Copy" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="COPY"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/Copy16.gif"/>
+                    </ImageView>
+                </graphic>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+C"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem text="Paste" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="PASTE"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/Paste16.gif"/>
+                    </ImageView>
+                </graphic>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+V"/>
+                </accelerator>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem text="Undo" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="UNDO"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/Undo16.gif"/>
+                    </ImageView>
+                </graphic>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+Z"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem text="Redo" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="REDO"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/Redo16.gif"/>
+                    </ImageView>
+                </graphic>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+Y"/>
+                </accelerator>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem text="Find" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="FIND"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/Find16.gif"/>
+                    </ImageView>
+                </graphic>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+F"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem text="Replace" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="REPLACE"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/Replace16.gif"/>
+                    </ImageView>
+                </graphic>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+R"/>
+                </accelerator>
+            </MenuItem>
+        </Menu>
+
+        <!-- View Menu -->
+        <Menu text="View">
+            <MenuItem text="Zoom In" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="ZOOM_IN"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/ZoomIn16.gif"/>
+                    </ImageView>
+                </graphic>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+="/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem text="Zoom Out" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="ZOOM_OUT"/>
+                </userData>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../images/toolbarButtonGraphics/general/ZoomOut16.gif"/>
+                    </ImageView>
+                </graphic>
+                <accelerator>
+                    <KeyCombination fx:value="Ctrl+-"/>
+                </accelerator>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem text="Auto Wrap" onAction="#handleAction">
+                <userData>
+                    <EditorAction fx:constant="AUTO_WRAP"/>
+                </userData>
+                <accelerator>
+                    <KeyCombination fx:value="Alt+Z"/>
+                </accelerator>
+            </MenuItem>
+        </Menu>
+    </MenuBar>
+
+    <!-- toolbar -->
+    <MigPane layout="gap 5!" MigPane.cc="north" stylesheets="@../css/EditorToolBar.css">
+        <Button onAction="#handleAction">
+            <graphic>
+                <ImageView>
+                    <Image url="@../images/toolbarButtonGraphics/general/New16.gif"/>
+                </ImageView>
+            </graphic>
+            <padding>
+                <Insets top="3" left="3" bottom="3" right="3"/>
+            </padding>
+            <tooltip>
+                <Tooltip text="New File"/>
+            </tooltip>
+            <userData>
+                <EditorAction fx:constant="NEW_FILE_INDEPENDENT_TAB"/>
+            </userData>
+        </Button>
+        <Button onAction="#handleAction">
+            <graphic>
+                <ImageView>
+                    <Image url="@../images/toolbarButtonGraphics/general/Open16.gif"/>
+                </ImageView>
+            </graphic>
+            <padding>
+                <Insets top="3" left="3" bottom="3" right="3"/>
+            </padding>
+            <tooltip>
+                <Tooltip text="Open File"/>
+            </tooltip>
+            <userData>
+                <EditorAction fx:constant="NEW_FILE_DEPENDENT_TAB"/>
+            </userData>
+        </Button>
+        <Separator orientation="VERTICAL"/>
+        <Button onAction="#handleAction">
+            <graphic>
+                <ImageView>
+                    <Image url="@../images/toolbarButtonGraphics/general/Save16.gif"/>
+                </ImageView>
+            </graphic>
+            <padding>
+                <Insets top="3" left="3" bottom="3" right="3"/>
+            </padding>
+            <tooltip>
+                <Tooltip text="Save File"/>
+            </tooltip>
+            <userData>
+                <EditorAction fx:constant="SAVE_SELECTED_TAB"/>
+            </userData>
+        </Button>
+        <Button onAction="#handleAction">
+            <graphic>
+                <ImageView>
+                    <Image url="@../images/toolbarButtonGraphics/general/SaveAs16.gif"/>
+                </ImageView>
+            </graphic>
+            <padding>
+                <Insets top="3" left="3" bottom="3" right="3"/>
+            </padding>
+            <tooltip>
+                <Tooltip text="Save As"/>
+            </tooltip>
+            <userData>
+                <EditorAction fx:constant="SAVE_SELECTED_TAB_AS"/>
+            </userData>
+        </Button>
+        <Button onAction="#handleAction">
+            <graphic>
+                <ImageView>
+                    <Image url="@../images/toolbarButtonGraphics/general/SaveAll16.gif"/>
+                </ImageView>
+            </graphic>
+            <padding>
+                <Insets top="3" left="3" bottom="3" right="3"/>
+            </padding>
+            <tooltip>
+                <Tooltip text="Save All"/>
+            </tooltip>
+            <userData>
+                <EditorAction fx:constant="SAVE_ALL_TAB"/>
+            </userData>
+        </Button>
+        <Separator orientation="VERTICAL"/>
+        <Button onAction="#handleAction">
+            <graphic>
+                <ImageView>
+                    <Image url="@../images/toolbarButtonGraphics/general/Cut16.gif"/>
+                </ImageView>
+            </graphic>
+            <padding>
+                <Insets top="3" left="3" bottom="3" right="3"/>
+            </padding>
+            <tooltip>
+                <Tooltip text="Cut"/>
+            </tooltip>
+            <userData>
+                <EditorAction fx:constant="CUT"/>
+            </userData>
+        </Button>
+        <Button onAction="#handleAction">
+            <graphic>
+                <ImageView>
+                    <Image url="@../images/toolbarButtonGraphics/general/Copy16.gif"/>
+                </ImageView>
+            </graphic>
+            <padding>
+                <Insets top="3" left="3" bottom="3" right="3"/>
+            </padding>
+            <tooltip>
+                <Tooltip text="Copy"/>
+            </tooltip>
+            <userData>
+                <EditorAction fx:constant="COPY"/>
+            </userData>
+        </Button>
+        <Button onAction="#handleAction">
+            <graphic>
+                <ImageView>
+                    <Image url="@../images/toolbarButtonGraphics/general/Paste16.gif"/>
+                </ImageView>
+            </graphic>
+            <padding>
+                <Insets top="3" left="3" bottom="3" right="3"/>
+            </padding>
+            <tooltip>
+                <Tooltip text="Paste"/>
+            </tooltip>
+            <userData>
+                <EditorAction fx:constant="PASTE"/>
+            </userData>
+        </Button>
+        <Separator orientation="VERTICAL"/>
+        <Button onAction="#handleAction">
+            <graphic>
+                <ImageView>
+                    <Image url="@../images/toolbarButtonGraphics/general/Undo16.gif"/>
+                </ImageView>
+            </graphic>
+            <padding>
+                <Insets top="3" left="3" bottom="3" right="3"/>
+            </padding>
+            <tooltip>
+                <Tooltip text="Undo"/>
+            </tooltip>
+            <userData>
+                <EditorAction fx:constant="UNDO"/>
+            </userData>
+        </Button>
+        <Button onAction="#handleAction">
+            <graphic>
+                <ImageView>
+                    <Image url="@../images/toolbarButtonGraphics/general/Redo16.gif"/>
+                </ImageView>
+            </graphic>
+            <padding>
+                <Insets top="3" left="3" bottom="3" right="3"/>
+            </padding>
+            <tooltip>
+                <Tooltip text="Redo"/>
+            </tooltip>
+            <userData>
+                <EditorAction fx:constant="REDO"/>
+            </userData>
+        </Button>
+        <Separator orientation="VERTICAL"/>
+        <Button onAction="#handleAction">
+            <graphic>
+                <ImageView>
+                    <Image url="@../images/toolbarButtonGraphics/general/Find16.gif"/>
+                </ImageView>
+            </graphic>
+            <padding>
+                <Insets top="3" left="3" bottom="3" right="3"/>
+            </padding>
+            <tooltip>
+                <Tooltip text="Find"/>
+            </tooltip>
+            <userData>
+                <EditorAction fx:constant="FIND"/>
+            </userData>
+        </Button>
+        <Button onAction="#handleAction">
+            <graphic>
+                <ImageView>
+                    <Image url="@../images/toolbarButtonGraphics/general/Replace16.gif"/>
+                </ImageView>
+            </graphic>
+            <padding>
+                <Insets top="3" left="3" bottom="3" right="3"/>
+            </padding>
+            <tooltip>
+                <Tooltip text="Replace"/>
+            </tooltip>
+            <userData>
+                <EditorAction fx:constant="REPLACE"/>
+            </userData>
+        </Button>
+    </MigPane>
+
+    <!-- editor pane, supporting multi tab -->
+    <TabPane fx:id="tabPane" MigPane.cc="dock center">
+        <tabs onChange="#handleTabPaneChange"/>
+    </TabPane>
+
+    <!-- status bar -->
+    <MigPane fx:id="statusBar" layout="fill" cols="[fill][grow 0]" MigPane.cc="South">
+        <Label fx:id="lengthLabel" text="length: 0, lines: 1"/>
+        <Separator orientation="VERTICAL" MigPane.cc="right, split 6, gapafter 3"/>
+        <Label fx:id="caretPositionLabel" text="caret position: 1" MigPane.cc="gapafter 30"/>
+        <Separator orientation="VERTICAL" MigPane.cc="gapafter 3"/>
+        <Label text="LF" MigPane.cc="gapafter 30"/>
+        <Separator orientation="VERTICAL" MigPane.cc="gapafter 3"/>
+        <Label fx:id="fontLabel" text="Font Size: 12" MigPane.cc="gapafter 20"/>
+    </MigPane>
+</MigPane>
