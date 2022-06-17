@@ -132,12 +132,12 @@ public class EditorMenuBar extends MenuBar implements Lifecycle {
 
         // undo
         MenuItem undoItem = new MenuItem("Undo", new ImageView(ImageResources.getImage("Undo16.gif")));
-        undoItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
+        undoItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
         undoItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.UNDO));
         items.add(undoItem);
         // redo
         MenuItem redoItem = new MenuItem("Redo", new ImageView(ImageResources.getImage("Redo16.gif")));
-        redoItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
+        redoItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
         redoItem.setOnAction(event -> editorTabPaneModel.handleAction(Action.REDO));
         items.add(redoItem);
         items.add(new SeparatorMenuItem());
