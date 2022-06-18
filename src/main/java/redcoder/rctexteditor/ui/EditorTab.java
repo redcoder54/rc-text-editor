@@ -72,13 +72,13 @@ public class EditorTab extends Tab {
         String text = tabContent.getText();
         if (openedFile != null) {
             FileUtils.writeFile(text, openedFile);
+            return true;
         } else {
-            saveAs();
+            return saveAs();
         }
-        return true;
     }
 
-    public void saveAs() {
+    public boolean saveAs() {
         boolean success = false;
         File savedFile = FileChooserSupport.getFileChooser().showSaveDialog(null);
         if (savedFile != null) {
@@ -103,6 +103,7 @@ public class EditorTab extends Tab {
             updateTabTitle(openedFile.getName());
             setContent(tabContent);
         }
+        return success;
     }
 
     public boolean close() {

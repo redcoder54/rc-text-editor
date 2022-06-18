@@ -75,6 +75,7 @@ public class RcTextEditorController {
             // add tab, then switch to it
             tabPane.getTabs().add(editorTab);
             tabPane.getSelectionModel().selectNext();
+            editorTab.getTabContent().requestFocus();
             NewTabId.nextId();
         }
 
